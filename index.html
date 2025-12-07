@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>RD CLASSES | Premium Portal</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Link to Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- 1. AUTH LOGIN VIEW -->
+    <div id="auth-view">
+        <div class="login-card text-center">
+            <div class="mb-4 d-inline-block p-3 rounded-circle bg-white text-primary shadow-sm">
+                <i class="fas fa-graduation-cap fa-3x"></i>
+            </div>
+            <h2 class="fw-bold text-dark inst-name-display mb-1">RD CLASSES</h2>
+            <p class="text-muted small mb-4">Secure Administration Portal</p>
+            
+            <form onsubmit="event.preventDefault(); handleLogin();">
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="loginUser" placeholder="Username">
+                    <label>Username</label>
+                </div>
+                <div class="form-floating mb-4">
+                    <input type="password" class="form-control" id="loginPass" placeholder="Password">
+                    <label>Password</label>
+                </div>
+                <button type="submit" class="btn btn-brand w-100 py-3 shadow-hover">
+                    Access Dashboard <i class="fas fa-arrow-right ms-2"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. ADMIN DASHBOARD -->
+    <div id="dashboard-view" style="display: none;">
+        
+        <!-- Mobile Logout -->
+        <button id="mobile-logout-btn" class="btn btn-white rounded-circle shadow-md no-print" onclick="logout()">
+            <i class="fas fa-power-off text-danger"></i>
+        </button>
+
+        <!-- Sidebar / Bottom Nav -->
+        <div class="sidebar">
+            <div class="sidebar-logo inst-name-display">
+                <i class="fas fa-shapes"></i> RD CLASSES
+            </div>
+            <nav class="flex-grow-1">
+                <div onclick="switchPage('overview')" class="nav-link active" id="nav-overview">
+                    <i class="fas fa-th-large"></i> <span>Overview</span>
+                </div>
+                <div onclick="switchPage('analytics')" class="nav-link" id="nav-analytics">
+                    <i class="fas fa-chart-pie"></i> <span>Analytics</span>
+                </div>
+                <div onclick="switchPage('settings')" class="nav-link" id="nav-settings">
+                    <i class="fas fa-cog"></i> <span>Settings</span>
+                </div>
+                <div onclick="switchPage('profile')" class="nav-link" id="nav-profile">
+                    <i class="fas fa-user-circle"></i> <span>Profile</span>
+                </div>
+            </nav>
+            <div class="mt-auto pt-4 border-top">
+                <button onclick="logout()" class="btn btn-light w-100 text-danger fw-bold">
+                    <i class="fas fa-sign-out-alt me-2"></i> Sign Out
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            
+            <!-- OVERVIEW PAGE -->
+            <div id="page-overview" class="page-section active">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-4 gap-3">
+                    <div>
+                        <h2 class="fw-bold mb-0">Fee Management</h2>
+                    </div>
+                    <div class="d-flex gap-2 w-100 w-md-auto justify-content-end">
+                        <div class="dropdown">
+                            <button class="btn btn-white bg-white border shadow-sm dropdown-toggle px-3" type="button" data-bs-toggle="dropdown">
+                                <i class="fas fa-download me-2 text-muted"></i> Export
+                            </button>
+                            <ul class="dropdown-menu border-0 shadow-lg rounded-4 p-2">
+                                <li><a class="dropdown-item rounded-3 mb-1" href="#" onclick="exportToExcel()"><i class="fas fa-file-excel text-success me-2"></i> Excel Sheet</a></li>
+                                <li><a class="dropdown-item rounded-3 mb-1" href="#" onclick="exportToWord()"><i class="fas fa-file-word text-primary me-2"></i> Word Doc</a></li>
+                                <li><a class="dropdown-item rounded-3" href="#" onclick="exportToImage()"><i class="fas fa-image text-danger me-2"></i> Image File</a></li>
+                            </ul>
+                        </div>
+                        <button class="btn btn-brand px-3" onclick="openAddModal()">
+                            <i class="fas fa-plus me-1"></i> Add
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="card-modern p-3 mb-4 d-flex flex-wrap gap-3 align-items-center">
+                    <div class="flex-grow-1 position-relative w-100 w-md-auto">
+                        <i class="fas fa-search position-absolute text-muted" style="left: 20px; top: 14px;"></i>
+                        <input type="text" id="searchBox" class="form-control border-0 ps-5" placeholder="Search by name or ID..." onkeyup="renderTable()">
+                    </div>
+                    <div class="border-start ps-0 ps-md-3 w-100 w-md-auto">
+                        <select id="filterClass" class="form-select border-0 fw-bold text-primary bg-transparent" onchange="renderTable()"></select>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="table-container" id="exportTableContainer">
+                    <div class="table-responsive">
+                        <table class="table" id="mainFeeTable">
+                            <thead>
+                                <tr>
+                                    <th class="sticky-col ps-4">Student Profile</th>
+                                    <th>Jan</th><th>Feb</th><th>Mar</th><th>Apr</th><th>May</th><th>Jun</th><th>Jul</th><th>Aug</th><th>Sep</th><th>Oct</th><th>Nov</th><th>Dec</th>
+                                    <th class="text-end">Paid</th><th class="text-end">Due</th><th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-table-body">
+                                <!-- JS Populated -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ANALYTICS PAGE -->
+            <div id="page-analytics" class="page-section">
+                <h2 class="fw-bold mb-4">Financial Insights</h2>
+                
+                <div class="row g-4 mb-5">
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <h6 class="text-uppercase text-muted fw-bold small mb-2">Total Students</h6>
+                            <h2 class="fw-bold text-dark mb-0 display-5" id="stat-count">0</h2>
+                            <i class="fas fa-users stat-icon-bg"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <h6 class="text-uppercase text-muted fw-bold small mb-2">Total Collected</h6>
+                            <h2 class="fw-bold text-success mb-0 display-5" id="stat-collected">₹0</h2>
+                            <i class="fas fa-wallet stat-icon-bg text-success"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="stat-card">
+                            <h6 class="text-uppercase text-muted fw-bold small mb-2">Pending Dues</h6>
+                            <h2 class="fw-bold text-danger mb-0 display-5" id="stat-pending">₹0</h2>
+                            <i class="fas fa-chart-line stat-icon-bg text-danger"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="card-modern h-100 p-4">
+                            <h5 class="fw-bold mb-4">Payment Distribution</h5>
+                            <div style="height: 300px;"><canvas id="pieChart"></canvas></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card-modern h-100 p-4">
+                            <h5 class="fw-bold mb-4">Revenue by Class</h5>
+                            <div style="height: 300px;"><canvas id="barChart"></canvas></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SETTINGS PAGE -->
+            <div id="page-settings" class="page-section">
+                <h2 class="fw-bold mb-4">System Settings</h2>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="card-modern h-100 p-4">
+                            <h5 class="fw-bold mb-4 text-primary"><i class="fas fa-university me-2"></i>Institute Details</h5>
+                            <form>
+                                <div class="mb-3">
+                                    <label class="small text-muted fw-bold mb-1">Institute Name</label>
+                                    <input type="text" id="setInstName" class="form-control">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="small text-muted fw-bold mb-1">Tagline</label>
+                                    <input type="text" id="setTagline" class="form-control">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="small text-muted fw-bold mb-1">Address</label>
+                                    <textarea id="setAddress" class="form-control" rows="3"></textarea>
+                                </div>
+                                <button type="button" onclick="saveInstitute()" class="btn btn-brand w-100 mt-2">Save Profile</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card-modern mb-4 p-4">
+                            <h5 class="fw-bold mb-3 text-success"><i class="fas fa-layer-group me-2"></i>Classes</h5>
+                            <div class="input-group mb-3">
+                                <input type="text" id="newClassInput" class="form-control" placeholder="Add new class">
+                                <button class="btn btn-success" onclick="addNewClass()"><i class="fas fa-plus"></i></button>
+                            </div>
+                            <div id="classListContainer" class="d-flex flex-wrap gap-2"></div>
+                        </div>
+
+                        <div class="card-modern p-4">
+                            <h5 class="fw-bold mb-3 text-danger"><i class="fas fa-lock me-2"></i>Security</h5>
+                            <form>
+                                <div class="row g-2 mb-3">
+                                    <div class="col-6"><input type="text" id="setAdminUser" class="form-control" placeholder="New User"></div>
+                                    <div class="col-6"><input type="text" id="setAdminPass" class="form-control" placeholder="New Pass"></div>
+                                </div>
+                                <button type="button" onclick="updateAdmin()" class="btn btn-outline-danger w-100 rounded-pill">Update Login</button>
+                            </form>
+                            <div class="mt-3 pt-3 border-top">
+                                <button onclick="shareAdminLink()" class="btn btn-light w-100 text-muted small"><i class="fas fa-link me-2"></i> Copy Portal Link</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROFILE PAGE -->
+            <div id="page-profile" class="page-section">
+                <h2 class="fw-bold mb-4">Admin Profile</h2>
+                <div class="card-modern p-4 text-center">
+                    <div class="mb-3">
+                        <div class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle shadow-sm" style="width: 90px; height: 90px; font-size: 2.5rem;">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                    </div>
+                    <h4 class="fw-bold inst-name-display text-dark mb-1">RD CLASSES</h4>
+                    <p class="text-muted mb-4 small"><i class="fas fa-user me-2"></i><span id="profile-user-display">admin</span></p>
+
+                    <div class="d-grid gap-3" style="max-width: 400px; margin: 0 auto;">
+                        <button onclick="shareAdminLink()" class="btn btn-outline-primary rounded-pill py-2">
+                            <i class="fas fa-share-alt me-2"></i> Share Dashboard Link
+                        </button>
+                        <button onclick="logout()" class="btn btn-danger rounded-pill py-2">
+                            <i class="fas fa-sign-out-alt me-2"></i> Log Out
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 3. STUDENT VIEW (Mobile Optimized) -->
+    <div id="student-view">
+        
+        <!-- GENERAL NOTIFICATION ALERT (Blue) -->
+        <div id="student-alert-box">
+            <i class="fas fa-bell fa-lg me-2"></i>
+            <span id="student-alert-text" class="fw-bold"></span>
+        </div>
+
+        <!-- FEE REMINDER ALERT (Red) -->
+        <div id="fee-alert-box">
+            <i class="fas fa-hand-holding-usd fa-lg me-2"></i>
+            <span id="fee-alert-text"></span>
+        </div>
+
+        <div class="student-hero">
+            <div class="container">
+                <div class="bg-white text-primary d-inline-flex align-items-center justify-content-center rounded-circle mb-3 shadow-lg" style="width: 70px; height: 70px;">
+                     <img src="https://i.ibb.co/67SHZzkN/G5.png" style="width: 50px; height: 50px; object-fit: contain;">
+                </div>
+                <h1 class="fw-bold mb-0 inst-name-display text-white">RD CLASSES</h1>
+                <p class="opacity-75 small text-uppercase letter-spacing-2 text-white">Student Portal</p>
+            </div>
+        </div>
+        
+        <div class="container pb-5" style="max-width: 900px;">
+            <!-- ID Card -->
+            <div class="id-card p-4 mb-4">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <div class="d-flex align-items-center">
+                            <div class="me-4 position-relative">
+                                <img id="stu-image" src="" class="rounded-circle shadow border border-3 border-white" style="width: 100px; height: 100px; object-fit: cover;">
+                                <div class="position-absolute bottom-0 end-0 bg-success border border-2 border-white rounded-circle p-2"></div>
+                            </div>
+                            <div>
+                                <h2 class="fw-bold mb-0 text-dark" id="stu-name">--</h2>
+                                <p class="text-muted mb-1"><i class="fas fa-id-card me-2 text-primary"></i><span id="stu-adm" class="fw-bold">--</span></p>
+                                <p class="text-muted mb-0 small"><i class="fas fa-phone-alt me-2"></i><span id="stu-mobile-display">--</span></p>
+                                <div id="stu-multi-classes" class="mt-2"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                        <div class="bg-light p-3 rounded-4 d-inline-block text-center border" style="min-width: 140px;">
+                            <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 1px;">Class</small>
+                            <span class="fs-3 fw-bold text-dark" id="stu-class">--</span>
+                        </div>
+                    </div>
+                </div>
+                <hr class="my-4 opacity-10">
+                <div class="row text-center g-0">
+                    <div class="col-4 border-end">
+                        <small class="text-muted fw-bold text-uppercase" style="font-size:0.65rem;">Monthly Fee</small>
+                        <h4 class="fw-bold text-dark mb-0" id="stu-monthly">₹0</h4>
+                    </div>
+                    <div class="col-4 border-end">
+                        <small class="text-muted fw-bold text-uppercase" style="font-size:0.65rem;">Paid</small>
+                        <h4 class="fw-bold text-success mb-0" id="stu-total-paid">₹0</h4>
+                    </div>
+                    <div class="col-4">
+                        <small class="text-muted fw-bold text-uppercase" style="font-size:0.65rem;">Due</small>
+                        <h4 class="fw-bold text-danger mb-0" id="stu-total-pending">₹0</h4>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="card-modern p-4 mb-4 border-0">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                    <div class="text-center text-md-start">
+                        <h5 class="fw-bold text-dark mb-1">Annual Statement</h5>
+                        <p class="small text-muted mb-0">Download report for the academic year</p>
+                    </div>
+                    <div class="btn-group shadow-sm rounded-pill">
+                        <button onclick="viewYearReport()" class="btn btn-outline-dark border-0 px-4">Preview</button>
+                        <button onclick="downloadYearPDF()" class="btn btn-dark px-4"><i class="fas fa-download me-2"></i>Save Report</button>
+                        <button onclick="shareYearPDF()" class="btn btn-outline-dark border-0"><i class="fas fa-share-alt"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Month Grid -->
+            <div class="d-flex justify-content-between align-items-center mb-3 px-2">
+                <h5 class="fw-bold text-muted mb-0 small text-uppercase">Payment History</h5>
+            </div>
+            <div class="row g-3" id="student-month-grid">
+                <!-- JS Populated -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. CAPTURE AREAS (HIDDEN) -->
+    <div id="receipt-capture-area">
+        <div style="border: 2px solid #1E3A8A; padding: 40px; background: #fff; position: relative; font-family: 'Plus Jakarta Sans', sans-serif;">
+            <div class="watermark inst-name-display" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-30deg); font-size: 5rem; color: rgba(0,0,0,0.03); font-weight: bold; white-space: nowrap;">RD CLASSES</div>
+            <div class="d-flex justify-content-between align-items-start mb-4 border-bottom pb-3">
+                <div><h1 class="fw-bold mb-1 inst-name-display" style="color: #1E3A8A;">RD CLASSES</h1><p class="mb-0 text-muted" id="rec-tagline">Education</p><small id="rec-address">Address</small></div>
+                <div class="text-end">
+                    <span class="badge bg-success fs-5 px-3 py-2">PAID</span>
+                    <p class="mb-0 fw-bold mt-2">Date: <span id="rec-date"></span></p>
+                    <small>Receipt #: <span id="rec-id"></span></small>
+                </div>
+            </div>
+            <div class="text-center mb-3 text-uppercase text-muted fw-bold" style="font-size: 0.9rem;">
+                Fee Receipt for <span id="rec-month" class="text-dark"></span>
+            </div>
+            <div class="row mb-4">
+                <div class="col-8"><p class="mb-1 text-uppercase text-muted small fw-bold">Student Details</p><h3 id="rec-name" class="fw-bold text-dark mb-1"></h3><p class="mb-0">Class: <span id="rec-class" class="fw-bold"></span> | Adm No: <span id="rec-adm" class="fw-bold"></span></p><p class="mb-0">Mobile: <span id="rec-mobile"></span></p></div>
+                <div class="col-4 text-end"><img id="rec-photo-img" src="" style="width: 80px; height: 80px; border-radius: 50%; border: 2px solid #eee; object-fit: cover;"></div>
+            </div>
+            <table class="table table-bordered mb-4" style="border-color: #000;">
+                <thead style="background: #f0f0f0;"><tr><th class="py-3">Description</th><th class="text-end py-3">Amount (INR)</th></tr></thead>
+                <tbody id="rec-items-body"></tbody>
+                <tfoot><tr class="table-light"><td class="text-end py-3"><strong>TOTAL RECEIVED</strong></td><td class="text-end fw-bold py-3 fs-5" id="rec-total"></td></tr></tfoot>
+            </table>
+            <div class="row mt-5 pt-3"><div class="col-6"><p class="text-muted small">Generated via Portal</p></div><div class="col-6 text-end"><div style="height: 40px;"></div><p class="border-top border-dark d-inline-block pt-2 px-5 fw-bold">Authorized Signature</p></div></div>
+        </div>
+    </div>
+
+    <div id="year-report-capture-area">
+        <div style="border: 2px solid #333; padding: 40px; background: white; font-family: 'Plus Jakarta Sans', sans-serif;">
+            <div class="text-center mb-4 border-bottom pb-3">
+                <h1 class="fw-bold mb-1 inst-name-display" style="color: #1E3A8A;">RD CLASSES</h1>
+                <p class="mb-0 text-muted" id="yr-tagline">Excellence</p>
+                <small id="yr-address">Address</small>
+                <h3 class="mt-3 fw-bold text-uppercase">Annual Statement</h3>
+            </div>
+            <div class="row mb-4">
+                <div class="col-6"><small class="text-muted fw-bold">STUDENT</small><h4 class="fw-bold" id="yr-name"></h4><p class="mb-0">Class: <span id="yr-class"></span></p><p>Adm: <span id="yr-adm"></span></p></div>
+                <div class="col-6 text-end"><small class="text-muted fw-bold">DATE</small><h5 id="yr-date"></h5><div class="mt-2"><span id="yr-status-badge" class="badge bg-secondary">Pending</span></div></div>
+            </div>
+            <table class="table table-striped table-bordered"><thead class="table-dark"><tr><th>Month</th><th>Fee</th><th>Status</th></tr></thead><tbody id="yr-tbody"></tbody><tfoot><tr class="table-light"><td colspan="2" class="text-end fw-bold">TOTAL PAID:</td><td class="fw-bold text-success" id="yr-paid-total"></td></tr><tr class="table-light"><td colspan="2" class="text-end fw-bold">TOTAL DUE:</td><td class="fw-bold text-danger" id="yr-due-total"></td></tr></tfoot></table>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="custom-toast"><i class="fas fa-check-circle me-2"></i><span id="toast-msg">Success</span></div>
+    
+    <!-- MODALS -->
+    <!-- Add/Edit Student Modal -->
+    <div class="modal fade" id="studentModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold">Student Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="studentForm">
+                        <input type="hidden" id="editId">
+                        <div class="row">
+                            <div class="col-md-3 text-center mb-3">
+                                <div class="position-relative d-inline-block">
+                                    <div style="width: 100px; height: 100px; background: #f8f9fa; border-radius: 50%; margin: 0 auto 10px; overflow: hidden; border: 3px solid white; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                                        <img id="previewImg" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" style="width: 100%; height: 100%; object-fit: cover;">
+                                    </div>
+                                    <label class="btn btn-sm btn-primary rounded-circle shadow-sm position-absolute bottom-0 end-0" style="width:32px; height:32px; padding:4px;"><i class="fas fa-camera"></i><input type="file" id="inpFile" accept="image/*" hidden onchange="handleImageUpload(this)"></label>
+                                </div>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="mb-3">
+                                    <label class="small fw-bold text-muted mb-1">Full Name</label>
+                                    <input type="text" class="form-control" id="inpName" required placeholder="e.g. John Doe">
+                                </div>
+                                <div class="row g-3 mb-3">
+                                    <div class="col-6">
+                                        <label class="small fw-bold text-muted mb-1">Class</label>
+                                        <select class="form-select" id="inpClass"></select>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="small fw-bold text-muted mb-1">Adm No</label>
+                                        <input type="text" class="form-control bg-light" id="inpAdm" readonly>
+                                    </div>
+                                </div>
+                                <div class="row g-3 mb-3">
+                                    <div class="col-6">
+                                        <label class="small fw-bold text-muted mb-1">Monthly Fee (₹)</label>
+                                        <input type="number" class="form-control" id="inpFee" required>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="small fw-bold text-muted mb-1">Mobile No</label>
+                                        <input type="text" class="form-control" id="inpMobile" placeholder="+91...">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-light p-3 rounded-4 mt-2">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="small fw-bold text-primary">Extra Subjects / Fees</label>
+                                <button type="button" class="btn btn-sm btn-white border rounded-pill shadow-sm hover-lift" onclick="addExtraRow()">+ Add Item</button>
+                            </div>
+                            <div id="extraClassesContainer"></div>
+                        </div>
+                        <div class="d-grid mt-4">
+                            <button type="button" class="btn btn-brand py-2" onclick="saveStudent()">Save Student Record</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Delete Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-body text-center p-5">
+                    <div class="bg-danger bg-opacity-10 p-3 rounded-circle d-inline-block mb-3">
+                        <i class="fas fa-trash-alt fa-2x text-danger"></i>
+                    </div>
+                    <h4 class="fw-bold">Delete Record?</h4>
+                    <p class="text-muted">This action cannot be undone. All fee history will be lost.</p>
+                    <div class="d-flex justify-content-center gap-2 mt-4">
+                        <button class="btn btn-light px-4 rounded-pill" data-bs-dismiss="modal">Cancel</button>
+                        <button class="btn btn-danger px-4 rounded-pill shadow-sm" onclick="confirmDelete()">Yes, Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Preview Modal -->
+    <div class="modal fade" id="previewModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold ms-2">Document Preview</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center bg-light m-3 rounded-4" style="min-height: 300px; display: flex; align-items: center; justify-content: center;">
+                    <div id="doc-preview-container" class="shadow-lg"></div>
+                </div>
+                <div class="modal-footer border-0 justify-content-center">
+                    <button type="button" class="btn btn-brand px-5" id="finalDownloadBtn">
+                        <i class="fas fa-download me-2"></i> Download Image
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- CUSTOM JS -->
+    <script src="script.js"></script>
+</body>
+</html>
